@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>AI SOC Dashboard</title>
+
+    <style>
+
+        body{
+            background-color: #0d1117;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+        }
+
+        .container{
+            width: 600px;
+            margin: auto;
+            margin-top: 40px;
+            background: #161b22;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px cyan;
+        }
+
+        h1{
+            color: cyan;
+        }
+
+        input{
+            width: 85%;
+            padding: 12px;
+            margin: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button{
+            padding: 12px 25px;
+            background: cyan;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background: #00ffffaa;
+        }
+
+        .result{
+            margin-top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .high{
+            color: red;
+        }
+
+        .normal{
+            color: lime;
+        }
+
+        table{
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        th, td{
+            border: 1px solid gray;
+            padding: 10px;
+        }
+
+        th{
+            background: cyan;
+            color: black;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>AI Insider Threat Detection System</h1>
+
+        <h3>Security Operations Center Dashboard</h3>
+
+        <form method="POST">
+
+            <input type="text" name="employee_name"
+            placeholder="Employee Name" required>
+
+            <input type="number" name="login_hour"
+            placeholder="Login Hour" required>
+
+            <input type="number" name="files_accessed"
+            placeholder="Files Accessed" required>
+
+            <input type="number" name="usb_used"
+            placeholder="USB Used (0 or 1)" required>
+
+            <br><br>
+
+            <button type="submit">Analyze Threat</button>
+
+        </form>
+
+        {% if result %}
+
+            <div class="result {{ css_class }}">
+
+                {{ result }}
+
+            </div>
+
+            <h2>Risk Score: {{ risk_score }}%</h2>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>
