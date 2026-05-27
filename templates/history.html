@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Threat History</title>
+
+    <style>
+        body {
+            background-color: #0d1117;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+        }
+
+        h1 {
+            color: cyan;
+            margin-top: 20px;
+        }
+
+        nav {
+            margin-top: 15px;
+        }
+
+        nav a {
+            color: cyan;
+            margin: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: white;
+        }
+
+        /* SEARCH BOX */
+        .search-box {
+            margin-top: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 250px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            background: cyan;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00ffffaa;
+        }
+
+        table {
+            width: 90%;
+            margin: auto;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background: #161b22;
+        }
+
+        th, td {
+            border: 1px solid gray;
+            padding: 12px;
+        }
+
+        th {
+            background: cyan;
+            color: black;
+        }
+
+        tr:hover {
+            background: #2a2a2a;
+        }
+
+        .high-risk {
+            background-color: #5a1a1a;
+        }
+
+        .medium-risk {
+            background-color: #3a3a1a;
+        }
+
+        .no-data {
+            color: gray;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Threat History Dashboard</h1>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('history') }}">Database History</a>
+    </nav>
+
+    <!-- SEARCH BAR -->
+    <div class="search-box">
+        <form method="POST">
+            <input type="text" name="search" placeholder="Search employee name">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <!-- TABLE -->
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Employee</th>
+            <th>Login Hour</th>
+            <th>Files Accessed</th>
+            <th>USB Used</th>
+            <th>Result</th>
+            <th>Risk Score</th>
+        </tr>
+
+        {% if data|length == 0 %}
+        <tr>
+            <td colspan="7" class="no-data">No threat records found</td>
+        </tr>
+        {% endif %}
+
+        {% for row in data %}
+
+        <tr
+            {% if row[6] >= 75 %}
+                class="high-risk"
+            {% elif row[6] >= 40 %}
+                class="medium-risk"
+            {% endif %}
+        >
+
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>{{ row[4] }}</td>
+            <td>{{ row[5] }}</td>
+            <td>{{ row[6] }}%</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</body>
+
+</html>

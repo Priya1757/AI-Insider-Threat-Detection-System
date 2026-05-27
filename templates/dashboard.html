@@ -7,28 +7,45 @@
 
     <style>
 
-        body{
+        body {
             background-color: #0d1117;
             color: white;
             font-family: Arial;
             text-align: center;
         }
 
-        .container{
+        /* NAVIGATION */
+        nav {
+            margin-top: 20px;
+        }
+
+        nav a {
+            color: cyan;
+            margin: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: white;
+        }
+
+        /* MAIN BOX */
+        .container {
             width: 600px;
             margin: auto;
-            margin-top: 40px;
+            margin-top: 30px;
             background: #161b22;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0px 0px 20px cyan;
         }
 
-        h1{
+        h1 {
             color: cyan;
         }
 
-        input{
+        input {
             width: 85%;
             padding: 12px;
             margin: 10px;
@@ -36,7 +53,7 @@
             border: none;
         }
 
-        button{
+        button {
             padding: 12px 25px;
             background: cyan;
             border: none;
@@ -45,38 +62,34 @@
             cursor: pointer;
         }
 
-        button:hover{
+        button:hover {
             background: #00ffffaa;
         }
 
-        .result{
+        /* RESULT BOX */
+        .result {
             margin-top: 20px;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
         }
 
-        .high{
-            color: red;
-        }
-
-        .normal{
+        .normal {
             color: lime;
         }
 
-        table{
-            width: 100%;
-            margin-top: 30px;
-            border-collapse: collapse;
+        /* HIGH RISK ALERT (BLINKING) */
+        .high {
+            color: red;
+            animation: blink 1s infinite;
         }
 
-        th, td{
-            border: 1px solid gray;
-            padding: 10px;
+        @keyframes blink {
+            50% { opacity: 0.3; }
         }
 
-        th{
-            background: cyan;
-            color: black;
+        .risk-score {
+            font-size: 22px;
+            margin-top: 10px;
         }
 
     </style>
@@ -84,6 +97,12 @@
 </head>
 
 <body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('history') }}">Database History</a>
+    </nav>
 
     <div class="container">
 
@@ -94,16 +113,16 @@
         <form method="POST">
 
             <input type="text" name="employee_name"
-            placeholder="Employee Name" required>
+                   placeholder="Employee Name" required>
 
             <input type="number" name="login_hour"
-            placeholder="Login Hour" required>
+                   placeholder="Login Hour" required>
 
             <input type="number" name="files_accessed"
-            placeholder="Files Accessed" required>
+                   placeholder="Files Accessed" required>
 
             <input type="number" name="usb_used"
-            placeholder="USB Used (0 or 1)" required>
+                   placeholder="USB Used (0 or 1)" required>
 
             <br><br>
 
@@ -114,12 +133,12 @@
         {% if result %}
 
             <div class="result {{ css_class }}">
-
                 {{ result }}
-
             </div>
 
-            <h2>Risk Score: {{ risk_score }}%</h2>
+            <div class="risk-score">
+                Risk Score: {{ risk_score }}%
+            </div>
 
         {% endif %}
 
