@@ -3,30 +3,89 @@ import pandas as pd
 import joblib
 import sqlite3
 import random
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
-# Load trained AI model
 model = joblib.load('model.pkl')
 
+# CREATE DATABASE TABLE
 
-# ---------------------------
+def create_table():
+    conn = sqlite3.connect('threat_logs.db')
+    cursor = conn.cursor()
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS threats (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        employee_name TEXT,
+        login_hour INTEGER,
+        files_accessed INTEGER,
+        usb_used INTEGER,
+        result TEXT,
+        risk_score INTEGER
+    )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+# Create table when app starts
+create_table()
+
+# AUTO ANALYSIS FUNCTION
+
+
+def analyze_database():
+    conn = sqlite3.connect('threat_logs.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, login_hour, files_accessed, usb_used FROM threats")
+    rows = cursor.fetchall()
+
+    for row in rows:
+        threat_id, login_hour, files_accessed, usb_used = row
+
+        sample = pd.DataFrame({
+            'login_hour': [login_hour],
+            'files_accessed': [files_accessed],
+            'usb_used': [usb_used]
+        })
+
+        prediction = model.predict(sample)
+
+        if prediction[0] == -1:
+            result = "⚠ SUSPICIOUS"
+            risk_score = random.randint(75, 99)
+        else:
+            result = "NORMAL"
+            risk_score = random.randint(10, 40)
+
+        cursor.execute("""
+            UPDATE threats
+            SET result=?, risk_score=?
+            WHERE id=?
+        """, (result, risk_score, threat_id))
+
+    conn.commit()
+    conn.close()
+
+# RUN AUTO SCHEDULER
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(analyze_database, 'interval', seconds=10)
+scheduler.start()
+
 # HOME
-# ---------------------------
+
 @app.route('/')
 def home():
     return redirect(url_for('dashboard'))
 
-
-# ---------------------------
 # DASHBOARD
-# ---------------------------
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-
-    result = ""
-    risk_score = 0
-    css_class = ""
 
     if request.method == 'POST':
 
@@ -35,83 +94,39 @@ def dashboard():
         files_accessed = int(request.form['files_accessed'])
         usb_used = int(request.form['usb_used'])
 
-        sample_data = pd.DataFrame({
-            'login_hour': [login_hour],
-            'files_accessed': [files_accessed],
-            'usb_used': [usb_used]
-        })
-
-        prediction = model.predict(sample_data)
-
-        if prediction[0] == -1:
-            result = f"⚠ HIGH RISK THREAT DETECTED for {employee_name}"
-            risk_score = random.randint(75, 99)
-            css_class = "high"
-        else:
-            result = f"✅ NORMAL ACTIVITY for {employee_name}"
-            risk_score = random.randint(10, 40)
-            css_class = "normal"
-
         conn = sqlite3.connect('threat_logs.db')
         cursor = conn.cursor()
 
-        cursor.execute('''
-            INSERT INTO threats 
+        cursor.execute("""
+            INSERT INTO threats
             (employee_name, login_hour, files_accessed, usb_used, result, risk_score)
             VALUES (?, ?, ?, ?, ?, ?)
-        ''',
-        (employee_name, login_hour, files_accessed, usb_used, result, risk_score))
+        """,
+        (employee_name, login_hour, files_accessed, usb_used, "PENDING", 0))
 
         conn.commit()
         conn.close()
 
-    return render_template(
-        'dashboard.html',
-        result=result,
-        risk_score=risk_score,
-        css_class=css_class
-    )
+        return redirect(url_for('history'))
+
+    return render_template('dashboard.html')
 
 
-# ---------------------------
-# GRAPH PAGE
-# ---------------------------
-@app.route('/graph')
-def graph():
-    conn = sqlite3.connect('threat_logs.db')
-    df = pd.read_sql_query("SELECT risk_score FROM threats", conn)
-    conn.close()
+# HISTORY PAGE
 
-    return render_template('graph.html', data=df['risk_score'].tolist())
-
-
-# ---------------------------
-# HISTORY PAGE (FIXED)
-# ---------------------------
-@app.route('/history', methods=['GET', 'POST'])
+@app.route('/history')
 def history():
-
-    search = request.form.get('search') if request.method == 'POST' else None
 
     conn = sqlite3.connect('threat_logs.db')
     cursor = conn.cursor()
 
-    if search:
-        cursor.execute(
-            "SELECT * FROM threats WHERE employee_name LIKE ?",
-            ('%' + search + '%',)
-        )
-    else:
-        cursor.execute("SELECT * FROM threats")
-
+    cursor.execute("SELECT * FROM threats ORDER BY id DESC")
     data = cursor.fetchall()
+
     conn.close()
 
     return render_template('history.html', data=data)
 
 
-# ---------------------------
-# RUN APP
-# ---------------------------
 if __name__ == '__main__':
     app.run(debug=True)
