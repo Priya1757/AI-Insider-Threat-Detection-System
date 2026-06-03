@@ -30,7 +30,7 @@
             color: white;
         }
 
-        /* MAIN BOX */
+        /* MAIN CONTAINER */
         .container {
             width: 600px;
             margin: auto;
@@ -66,10 +66,10 @@
             background: #00ffffaa;
         }
 
-        /* RESULT BOX */
+        /* RESULT STYLES */
         .result {
             margin-top: 20px;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
         }
 
@@ -77,7 +77,6 @@
             color: lime;
         }
 
-        /* HIGH RISK ALERT (BLINKING) */
         .high {
             color: red;
             animation: blink 1s infinite;
@@ -87,9 +86,9 @@
             50% { opacity: 0.3; }
         }
 
-        .risk-score {
-            font-size: 22px;
+        .risk {
             margin-top: 10px;
+            font-size: 20px;
         }
 
     </style>
@@ -107,9 +106,9 @@
     <div class="container">
 
         <h1>AI Insider Threat Detection System</h1>
+        <h3>Security Operations Center (SOC)</h3>
 
-        <h3>Security Operations Center Dashboard</h3>
-
+        <!-- FORM -->
         <form method="POST">
 
             <input type="text" name="employee_name"
@@ -130,13 +129,14 @@
 
         </form>
 
+        <!-- RESULT -->
         {% if result %}
 
             <div class="result {{ css_class }}">
                 {{ result }}
             </div>
 
-            <div class="risk-score">
+            <div class="risk">
                 Risk Score: {{ risk_score }}%
             </div>
 

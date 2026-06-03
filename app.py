@@ -113,20 +113,26 @@ def dashboard():
 
 
 # HISTORY PAGE
-
-@app.route('/history')
+@app.route('/history', methods=['GET', 'POST'])
 def history():
+
+    search = request.form.get('search')
 
     conn = sqlite3.connect('threat_logs.db')
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM threats ORDER BY id DESC")
-    data = cursor.fetchall()
+    if search:
+        cursor.execute(
+            "SELECT * FROM threats WHERE employee_name LIKE ?",
+            ('%' + search + '%',)
+        )
+    else:
+        cursor.execute("SELECT * FROM threats")
 
+    data = cursor.fetchall()
     conn.close()
 
     return render_template('history.html', data=data)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
