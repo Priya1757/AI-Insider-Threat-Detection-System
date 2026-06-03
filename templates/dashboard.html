@@ -24,15 +24,36 @@
             margin: 10px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 18px;
         }
 
         nav a:hover {
             color: white;
         }
 
+        /* STATS */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #161b22;
+            padding: 15px;
+            border-radius: 10px;
+            width: 180px;
+            box-shadow: 0px 0px 10px cyan;
+        }
+
+        .card h2 {
+            color: cyan;
+        }
+
         /* MAIN CONTAINER */
         .container {
-            width: 600px;
+            width: 700px;
             margin: auto;
             margin-top: 30px;
             background: #161b22;
@@ -66,7 +87,6 @@
             background: #00ffffaa;
         }
 
-        /* RESULT STYLES */
         .result {
             margin-top: 20px;
             font-size: 22px;
@@ -83,13 +103,54 @@
         }
 
         @keyframes blink {
-            50% { opacity: 0.3; }
+            50% {
+                opacity: 0.3;
+            }
         }
 
         .risk {
             margin-top: 10px;
             font-size: 20px;
         }
+
+        .logout {
+            color: red;
+        }
+        /* STATISTICS CARDS */
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    background: #161b22;
+    padding: 15px;
+    border-radius: 10px;
+    width: 180px;
+    box-shadow: 0px 0px 10px cyan;
+}
+
+.card h3 {
+    color: white;
+}
+
+.card h2 {
+    color: cyan;
+}
+.alert-box{
+    width: 80%;
+    margin: 20px auto;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #8b0000;
+    color: white;
+    box-shadow: 0px 0px 15px red;
+}
 
     </style>
 
@@ -100,45 +161,122 @@
     <!-- NAVIGATION -->
     <nav>
         <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">Database History</a>
+        <a href="{{ url_for('history') }}">Threat History</a>
+        <a href="{{ url_for('logout') }}" class="logout">Logout</a>
     </nav>
 
+    <nav>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('history') }}">Database History</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</nav>
+
+<div class="stats">
+
+    <div class="card">
+        <h3>Total Records</h3>
+        <h2>{{ total_records }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Suspicious</h3>
+        <h2>{{ suspicious_count }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Normal</h3>
+        <h2>{{ normal_count }}</h2>
+    </div>
+
+</div>
+    <div class="stats">
+
+    <div class="card">
+        <h3>Total Records</h3>
+        <h2>{{ total_records }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Suspicious</h3>
+        <h2>{{ suspicious_count }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Normal</h3>
+        <h2>{{ normal_count }}</h2>
+    </div>
+
+</div>
+
+    <!-- STATISTICS -->
+    <div class="stats">
+
+        <div class="card">
+            <h3>Total Records</h3>
+            <h2>{{ total_records }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Suspicious</h3>
+            <h2>{{ suspicious_count }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Normal</h3>
+            <h2>{{ normal_count }}</h2>
+        </div>
+
+    </div>
+    <div class="alert-box">
+    {{ alert_message }}
+    </div>
+
+    <!-- MAIN DASHBOARD -->
     <div class="container">
 
         <h1>AI Insider Threat Detection System</h1>
+
         <h3>Security Operations Center (SOC)</h3>
 
-        <!-- FORM -->
         <form method="POST">
 
-            <input type="text" name="employee_name"
-                   placeholder="Employee Name" required>
+            <input type="text"
+                   name="employee_name"
+                   placeholder="Employee Name"
+                   required>
 
-            <input type="number" name="login_hour"
-                   placeholder="Login Hour" required>
+            <input type="number"
+                   name="login_hour"
+                   placeholder="Login Hour"
+                   required>
 
-            <input type="number" name="files_accessed"
-                   placeholder="Files Accessed" required>
+            <input type="number"
+                   name="files_accessed"
+                   placeholder="Files Accessed"
+                   required>
 
-            <input type="number" name="usb_used"
-                   placeholder="USB Used (0 or 1)" required>
+            <input type="number"
+                   name="usb_used"
+                   placeholder="USB Used (0 or 1)"
+                   required>
 
             <br><br>
 
-            <button type="submit">Analyze Threat</button>
+            <button type="submit">
+                Analyze Threat
+            </button>
 
         </form>
 
-        <!-- RESULT -->
         {% if result %}
 
-            <div class="result {{ css_class }}">
-                {{ result }}
-            </div>
+        <div class="result {{ css_class }}">
+            {{ result }}
+        </div>
 
-            <div class="risk">
-                Risk Score: {{ risk_score }}%
-            </div>
+        <div class="risk">
+            Risk Score: {{ risk_score }}%
+        </div>
 
         {% endif %}
 
