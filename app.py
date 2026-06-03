@@ -126,8 +126,38 @@ def home():
 # ---------------------------
 # DASHBOARD
 # ---------------------------
-@app.route('/dashboard', methods=['GET', 'POST'])
+@app.route('/dashboard')
 def dashboard():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect('threat_logs.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM threats")
+    total_records = cursor.fetchone()[0]
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM threats WHERE result='⚠ SUSPICIOUS'"
+    )
+    suspicious_count = cursor.fetchone()[0]
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM threats WHERE result='NORMAL'"
+    )
+    normal_count = cursor.fetchone()[0]
+
+    conn.close()
+
+    return render_template(
+        'dashboard.html',
+        total=total_records,
+        suspicious=suspicious_count,
+        normal=normal_count
+    )
+@app.route('/analysis', methods=['GET', 'POST'])
+def analysis():
 
     if 'user' not in session:
         return redirect(url_for('login'))
@@ -168,35 +198,11 @@ def dashboard():
 
         return redirect(url_for('history'))
 
-    conn = sqlite3.connect('threat_logs.db')
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT COUNT(*) FROM threats")
-    total_records = cursor.fetchone()[0]
-
-    cursor.execute(
-        "SELECT COUNT(*) FROM threats WHERE result='⚠ SUSPICIOUS'"
-    )
-    suspicious_count = cursor.fetchone()[0]
-
-    cursor.execute(
-        "SELECT COUNT(*) FROM threats WHERE result='NORMAL'"
-    )
-    normal_count = cursor.fetchone()[0]
-
-    conn.close()
-
-    return render_template(
-        'dashboard.html',
-        total_records=total_records,
-        suspicious_count=suspicious_count,
-        normal_count=normal_count
-    )
-
-
+    return render_template('analysis.html')
 # ---------------------------
 # HISTORY PAGE
 # ---------------------------
+
 @app.route('/history', methods=['GET', 'POST'])
 def history():
 
@@ -209,47 +215,21 @@ def history():
     cursor = conn.cursor()
 
     if search:
-
         cursor.execute(
             "SELECT * FROM threats WHERE employee_name LIKE ?",
             ('%' + search + '%',)
         )
-
     else:
-
         cursor.execute("SELECT * FROM threats")
 
     data = cursor.fetchall()
 
     conn.close()
-    conn = sqlite3.connect('threat_logs.db')
-    cursor = conn.cursor()
 
-# Total records
-    cursor.execute("SELECT COUNT(*) FROM threats")
-    total_records = cursor.fetchone()[0]
-
-# Suspicious records
-    cursor.execute("SELECT COUNT(*) FROM threats WHERE result='⚠ SUSPICIOUS'")
-    suspicious_count = cursor.fetchone()[0]
-    if suspicious_count > 0:
-        alert_message = f"🚨 ALERT: {suspicious_count} Suspicious Threat(s) Detected"
-    else:
-        alert_message = "✅ No Active Threats"
-
-# Normal records
-    cursor.execute("SELECT COUNT(*) FROM threats WHERE result='NORMAL'")
-    normal_count = cursor.fetchone()[0]
-
-    conn.close()
     return render_template(
-    'dashboard.html',
-    total_records=total_records,
-    suspicious_count=suspicious_count,
-    normal_count=normal_count,
-    alert_message=alert_message
+        'history.html',
+        data=data
     )
-
 # ---------------------------
 # LOGOUT
 # ---------------------------

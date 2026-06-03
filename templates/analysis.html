@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Insider Analysis</title>
+
+<style>
+
+body{
+background:#0d1117;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+
+nav{
+margin:20px;
+}
+
+nav a{
+color:cyan;
+margin:15px;
+text-decoration:none;
+font-size:20px;
+font-weight:bold;
+}
+
+.container{
+width:600px;
+margin:auto;
+background:#161b22;
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 20px cyan;
+}
+
+input{
+width:85%;
+padding:12px;
+margin:10px;
+border:none;
+border-radius:8px;
+}
+
+button{
+padding:12px 25px;
+background:cyan;
+border:none;
+border-radius:8px;
+}
+
+</style>
+</head>
+
+<body>
+<body>
+
+<nav>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('analysis') }}">Insider Analysis</a>
+    <a href="{{ url_for('history') }}">Threat History</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</nav>
+
+<div class="container">
+
+<h1>Insider Threat Analysis</h1>
+
+<form method="POST">
+
+<input type="text"
+name="employee_name"
+placeholder="Employee Name"
+required>
+
+<input type="number"
+name="login_hour"
+placeholder="Login Hour"
+required>
+
+<input type="number"
+name="files_accessed"
+placeholder="Files Accessed"
+required>
+
+<input type="number"
+name="usb_used"
+placeholder="USB Used (0 or 1)"
+required>
+
+<br><br>
+
+<button type="submit">
+Analyze Threat
+</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

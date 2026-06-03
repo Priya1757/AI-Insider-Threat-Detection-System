@@ -1,159 +1,98 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Threat History</title>
 
-    <style>
-        body {
-            background-color: #0d1117;
-            color: white;
-            font-family: Arial;
-            text-align: center;
-        }
+<title>Threat History</title>
 
-        h1 {
-            color: cyan;
-            margin-top: 20px;
-        }
+<style>
 
-        nav {
-            margin-top: 15px;
-        }
+body{
+background:#0d1117;
+color:white;
+font-family:Arial;
+text-align:center;
+}
 
-        nav a {
-            color: cyan;
-            margin: 10px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+nav{
+margin:20px;
+}
 
-        nav a:hover {
-            color: white;
-        }
+nav a{
+color:cyan;
+margin:15px;
+text-decoration:none;
+font-size:20px;
+font-weight:bold;
+}
 
-        /* SEARCH BOX */
-        .search-box {
-            margin-top: 20px;
-        }
+table{
+width:90%;
+margin:auto;
+margin-top:20px;
+border-collapse:collapse;
+background:#161b22;
+}
 
-        input {
-            padding: 10px;
-            width: 250px;
-            border-radius: 6px;
-            border: none;
-        }
+th,td{
+border:1px solid gray;
+padding:12px;
+}
 
-        button {
-            padding: 10px 15px;
-            border: none;
-            background: cyan;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+th{
+background:cyan;
+color:black;
+}
 
-        button:hover {
-            background: #00ffffaa;
-        }
+</style>
 
-        table {
-            width: 90%;
-            margin: auto;
-            margin-top: 30px;
-            border-collapse: collapse;
-            background: #161b22;
-        }
-
-        th, td {
-            border: 1px solid gray;
-            padding: 12px;
-        }
-
-        th {
-            background: cyan;
-            color: black;
-        }
-
-        tr:hover {
-            background: #2a2a2a;
-        }
-
-        .high-risk {
-            background-color: #5a1a1a;
-        }
-
-        .medium-risk {
-            background-color: #3a3a1a;
-        }
-
-        .no-data {
-            color: gray;
-            padding: 20px;
-        }
-    </style>
 </head>
 
-<body>
+<body><body>
 
-    <h1>Threat History Dashboard</h1>
+<nav>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('analysis') }}">Insider Analysis</a>
+    <a href="{{ url_for('history') }}">Threat History</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</nav>
 
-    <!-- NAVIGATION -->
-    <nav>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">Database History</a>
-    </nav>
+<h1>Threat History</h1>
 
-    <!-- SEARCH BAR -->
-    <div class="search-box">
-        <form method="POST">
-            <input type="text" name="search" placeholder="Search Employee Name">
-            <button type="submit">Search</button>
-        </form>
-    <!-- TABLE -->
-     
-    <h1>Threat History Dashboard</h1>
-    <table>
+<form method="POST">
+<input type="text"
+name="search"
+placeholder="Search Employee">
 
-        <tr>
-            <th>ID</th>
-            <th>Employee</th>
-            <th>Login Hour</th>
-            <th>Files Accessed</th>
-            <th>USB Used</th>
-            <th>Result</th>
-            <th>Risk Score</th>
-        </tr>
+<button type="submit">Search</button>
+</form>
 
-        {% if data|length == 0 %}
-        <tr>
-            <td colspan="7" class="no-data">No threat records found</td>
-        </tr>
-        {% endif %}
+<table>
 
-        {% for row in data %}
+<tr>
+<th>ID</th>
+<th>Employee</th>
+<th>Login Hour</th>
+<th>Files</th>
+<th>USB</th>
+<th>Status</th>
+<th>Risk</th>
+</tr>
 
-        <tr
-            {% if row[6] >= 75 %}
-                class="high-risk"
-            {% elif row[6] >= 40 %}
-                class="medium-risk"
-            {% endif %}
-        >
+{% for row in data %}
 
-            <td>{{ row[0] }}</td>
-            <td>{{ row[1] }}</td>
-            <td>{{ row[2] }}</td>
-            <td>{{ row[3] }}</td>
-            <td>{{ row[4] }}</td>
-            <td>{{ row[5] }}</td>
-            <td>{{ row[6] }}%</td>
+<tr>
+<td>{{ row[0] }}</td>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>{{ row[3] }}</td>
+<td>{{ row[4] }}</td>
+<td>{{ row[5] }}</td>
+<td>{{ row[6] }}%</td>
+</tr>
 
-        </tr>
+{% endfor %}
 
-        {% endfor %}
-
-    </table>
+</table>
 
 </body>
-
 </html>
